@@ -2,6 +2,7 @@ package org.insa.graph;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -25,13 +26,40 @@ public class Path {
      * @throws IllegalArgumentException If the list of nodes is not valid, i.e. two
      *         consecutive nodes in the list are not connected in the graph.
      * 
-     * @deprecated Need to be implemented.
      */
     public static Path createFastestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
         List<Arc> arcs = new ArrayList<Arc>();
-        // TODO:
-        return new Path(graph, arcs);
+        Arc fastestArc;
+        Node prevNode = null;
+        for(Node node : nodes) {
+        	if(prevNode ==  null) {
+        		prevNode = node;
+        	} else {
+	        	fastestArc = null;
+	        	for(Arc arc : prevNode) {
+	        		if(arc.getDestination() == node) {
+		        		if(fastestArc == null) {
+		        			fastestArc = arc;
+		        		} else if(arc.getMinimumTravelTime() < fastestArc.getMinimumTravelTime()) {
+		        			fastestArc = arc;
+		        		}
+	        		}
+	        	}
+	    		if(fastestArc != null) {
+	    			arcs.add(fastestArc);
+	    		} else {
+	    			throw new IllegalArgumentException(
+	                        "Two nodes have not arc.");
+	    		}
+        	}
+        	prevNode = node;
+        }
+        if(nodes.size() == 1) {
+        	return new Path(graph, nodes.get(0));
+        } else {
+        	return new Path(graph, arcs);
+        }
     }
 
     /**
