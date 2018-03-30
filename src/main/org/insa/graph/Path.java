@@ -196,10 +196,47 @@ public class Path {
      * @deprecated Need to be implemented.
      */
     public boolean isValid() {
-        // TODO:
-        return false;
+    		boolean firstCond = isEmpty() ;
+    		if(firstCond) {
+    			return true;
+    			
+    		}else {
+    			int secCond = size() ;
+    			if(secCond == 1) {
+    				return true;
+    				
+    			}else{
+		    		Arc prec = null ;
+		    		boolean thirdCond =false ; 
+		    		boolean fourthCond = true ; 
+		    		
+		
+		    		for ( Arc A : this.arcs ) {
+		    			if (prec == null) {
+		    				prec = A ;
+		    				if (A.getOrigin() == this.getOrigin()) {
+		    					thirdCond = true ;		
+		    				}
+		    			}
+		    			else if ( prec.getDestination() != A.getOrigin() ) {
+		    	
+		    				fourthCond = false ;
+		  
+		    			}
+		    			prec = A ; 
+		    		}
+    				if(thirdCond &&  fourthCond) {
+    					return true;
+    					
+    				}
+    		        else {
+	    	        		return false ;
+	    	        }
+    			}
+    			
+    		}
+    		
     }
-
     /**
      * Compute the length of this path (in meters).
      * 
