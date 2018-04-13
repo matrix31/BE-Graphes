@@ -25,13 +25,18 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         Graph graph = data.getGraph();
         
         final int nbNodes = graph.size();
+        //Tableau de label de la taille du nombre de noeuds
         Label[] labels = new Label[nbNodes];
+        //Tous les labels <= null
         Arrays.fill(labels, null);
         
-        //Premier sommet
+        //Init label premier sommet
         labels[data.getOrigin().getId()] = new Label(data.getOrigin());
         labels[data.getOrigin().getId()].setCost(0);
+        
+        //Création arbre binaire
         BinaryHeap<Label> heap = new BinaryHeap<Label>();
+        //Premier label dans l'arbre
         heap.insert(labels[data.getOrigin().getId()]);
         
         //compteur des mark
@@ -41,21 +46,27 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         
         //Algo de dijkstra
         while(mark < heap.size()) {
+        	//On recup le premier element de l'arbre et on met sa mark à 1
         	labelx = heap.deleteMin();
         	labelx.setMark(1);
+        	//On récupère ses noeuds adjacents et on boucle sur les arcs
         	noeudx = labelx.getNoeud();
         	for(Arc arc : noeudx) {
+        		//Si le label de l'arc n'existe pas on l'initialise
         		if(labels[arc.getDestination().getId()] == null) {
         			labels[arc.getDestination().getId()] = new Label(arc.getDestination());
         		}
-        		if(labels[arc.getDestination().getId()].getCost() > labelx.getCost() + arc.getLength()) {
+        		//Si coût actuel du noeud > au cout nouveau on l'actualise et si l'arc est autorisé au mode de transport
+        		if(labels[arc.getDestination().getId()].getCost() > labelx.getCost() + arc.getLength() && data.isAllowed(arc)) {
         			labels[arc.getDestination().getId()].setCost(labelx.getCost() + arc.getLength());
         			try {
+        				//On supprime le label pour le remettre avec sa mark modifiée
         				heap.remove(labels[arc.getDestination().getId()]);
         			} catch(ElementNotFoundException e) {
         				
         			} finally {
         				heap.insert(labels[arc.getDestination().getId()]);
+        				//On modifie son "père"
         				labels[arc.getDestination().getId()].setFather(labelx.getNoeud());
         			}
         		}
@@ -69,8 +80,9 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 
      	// The destination has been found, notify the observers.
      		notifyDestinationReached(data.getDestination());
-     	// Create the path from the array of predecessors...
+     	// Create the path from the array of nodes...
      		ArrayList<Node> nodes = new ArrayList<>();
+     		//On crée un tableau de nodes en récupant tous les father
      		Node node = labels[data.getDestination().getId()].getNoeud();
      		while(node != null) {
      			nodes.add(node);
