@@ -145,19 +145,26 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     @Override
     public void remove(E x) throws ElementNotFoundException {
     		int index_x = -1;
+    		// On cherche a quel indice x se positionne 
       	for(int i = 0;i<currentSize;i++) {
       		if(x.equals(array.get(i)))
       			index_x = i;
       	}
+      	// gestion de l'exception 
       	if(index_x == -1) {
       		throw new ElementNotFoundException(x);
       	}
     		E dernierElem= this.array.get(--currentSize);
+    		// on place a la position de x le dernier élement du tas 
     		this.arraySet(index_x,dernierElem);
-    		this.percolateUp(index_x);			// changement eventuel de branche 
+    		// changement eventuel de branche
+    		this.percolateUp(index_x);
+    		// parcours des noeuds de haut en bas une fois la branche trouvée afin de placer x 
     		this.percolateDown(index_x);
    
     }
+    
+  // Rq : On n'utilise pas la méthode indexOf() car celle-ci ne prends pas en compte le changement de taille du tas 
  
     
 
