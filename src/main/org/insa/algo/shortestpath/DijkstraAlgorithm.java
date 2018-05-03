@@ -49,7 +49,10 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         Node noeudx;
         boolean found = false;
         //Algo de dijkstra
+        //Calcul itérations pour les tests
+        int iter = 0;
         while(mark < heap.size() && !found ) {
+        	iter++;
         	//On recup le premier element de l'arbre et on met sa mark à 1
         	labelx = heap.deleteMin();
         	labelx.setMark(1);
@@ -64,7 +67,6 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         	//On récupère ses noeuds adjacents et on boucle sur les arcs
         	noeudx = labelx.getNoeud();
         	for(Arc arc : noeudx) {
-        		
         		//Si le label de l'arc n'existe pas on l'initialise
         		if(labels[arc.getDestination().getId()] == null) {
         			labels[arc.getDestination().getId()] = new Label(arc.getDestination());
@@ -86,6 +88,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         				labels[arc.getDestination().getId()].setFather(labelx.getNoeud());
         			}
         		}
+        		//System.out.println(labels[arc.getDestination().getId()].getCost());
         	}
         }
         ShortestPathSolution solution = null;
@@ -105,10 +108,10 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
      		}
      		// Reverse the path...
      		Collections.reverse(nodes);
+     		//System.out.println("Nombre d'arcs : " + nodes.size() + " & Nombre d'itérations : " + iter);	
      		// Create the final solution.
      		solution = new ShortestPathSolution(data, Status.OPTIMAL, Path.createShortestPathFromNodes(graph, nodes));
      	}
-     		
         return solution;
     }
 }
