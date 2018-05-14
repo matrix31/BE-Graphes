@@ -1,7 +1,10 @@
 package org.insa.algo.shortestpath;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +19,10 @@ import org.insa.graph.Node;
 import org.insa.graph.Path;
 import org.insa.graph.RoadInformation;
 import org.insa.graph.RoadInformation.RoadType;
+import org.insa.graph.io.BinaryGraphReader;
+import org.insa.graph.io.BinaryPathReader;
+import org.insa.graph.io.GraphReader;
+import org.insa.graph.io.PathReader;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -122,5 +129,79 @@ public class DijkstraAlgorithmTest {
     		System.out.print("\n");
     	}
     	System.out.print("\n");*/
+    }
+    
+    
+    @Test
+    // Test simple en distance
+    public void testDijkstraLength() throws Exception { 	
+    	String mapName = "/home/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/insa.mapgr";
+        ShortestPathSolution[] Solutions = new ShortestPathSolution[2];
+        Solutions = TestDijkstraBF(mapName,103,675,0);
+        assertTrue(Solutions[0].getPath().getArcs().equals(Solutions[1].getPath().getArcs()));
+    }
+    
+    @Test
+    // Test simple en temps
+    public void testDijkstraTime() throws Exception { 	
+    	String mapName = "/home/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/insa.mapgr";
+        ShortestPathSolution[] Solutions = new ShortestPathSolution[2];
+        Solutions = TestDijkstraBF(mapName,103,675,5);
+        assertTrue(Solutions[0].getPath().getArcs().equals(Solutions[1].getPath().getArcs()));
+    }
+    
+    @Test 
+    // Chemin inexistant
+    public void testDijkstraNoWay() throws Exception { 	
+    	String mapName = "/home/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/new-zealand.mapgr";
+        ShortestPathSolution[] Solutions = new ShortestPathSolution[2];
+        Solutions = TestDijkstraBF(mapName,15357,313202,0);
+        assertEquals(Solutions[0].getStatus(), Solutions[1].getStatus());
+    }
+    
+    @Test 
+    // Chemin inexistant début = fin
+    public void testDijkstraStartEEnd() throws Exception { 	
+    	String mapName = "/home/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/carre.mapgr";
+        ShortestPathSolution[] Solutions = new ShortestPathSolution[2];
+        Solutions = TestDijkstraBF(mapName,12,12,0);
+        assertEquals(Solutions[0].getStatus(), Solutions[1].getStatus());
+    }
+    
+    @Test 
+    // Chemin avec des routes interdites aux voitures
+    public void testDijkstraNoCarAllowed() throws Exception { 	
+    	String mapName = "/home/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/toulouse.mapgr";
+    	ShortestPathSolution[] Solutions = new ShortestPathSolution[2];
+        Solutions = TestDijkstraBF(mapName,3669,17290,1);
+        assertTrue(Solutions[0].getPath().getArcs().equals(Solutions[1].getPath().getArcs()));
+    }
+    
+    
+    // Méthodes pour les test
+    /* @param : String mapName
+     * 			int originId
+     * 			int destinationId
+     * 			int filterId
+     * @return : ShortestPathSolution[2] Tableau avec les 2 solutions (Dijstra et Bellman-Ford)
+     */
+    private ShortestPathSolution[] TestDijkstraBF(String mapName, int originId, int destinationId, int filterId) throws Exception {
+        List<ArcInspector> filters = ArcInspectorFactory.getAllFilters();
+        ShortestPathSolution[] Solutions = new ShortestPathSolution[2];
+        // Create a graph reader.
+        GraphReader reader = new BinaryGraphReader(
+        new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
+        //Read the graph.
+        Graph graph = reader.read();
+        Node origin = graph.get(originId);
+        Node destination = graph.get(destinationId);
+        ShortestPathData data = new ShortestPathData(graph, origin, destination, filters.get(filterId));
+        //solution Dijkstra
+      	DijkstraAlgorithm algoD = new DijkstraAlgorithm(data);
+      	Solutions[0] = algoD.doRun();
+        //Solution Bellman Ford
+        BellmanFordAlgorithm algoBF = new BellmanFordAlgorithm(data);
+        Solutions[1] = algoBF.doRun();
+        return Solutions;
     }
 }

@@ -170,7 +170,33 @@ public class ArcInspectorFactory {
 
         // Add your own filters here (do not forget to implement toString()
         // to get an understandable output!):
+     // No filter (all arcs allowed):
+        filters.add(new ArcInspector() {
+            @Override
+            public boolean isAllowed(Arc arc) {
+                return true;
+            }
 
+            @Override
+            public double getCost(Arc arc) {
+                return arc.getLength();
+            }
+
+            @Override
+            public int getMaximumSpeed() {
+                return GraphStatistics.NO_MAXIMUM_SPEED;
+            }
+
+            @Override
+            public Mode getMode() {
+                return Mode.TIME;
+            }
+
+            @Override
+            public String toString() {
+                return "Fastest path, all roads allowed";
+            }
+        });
         return filters;
     }
 
