@@ -68,35 +68,37 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 	        
         	//On récupère ses noeuds adjacents et on boucle sur les arcs
         	noeudx = labelx.getNoeud();
+        	int labelId;
         	for(Arc arc : noeudx) {
         		if(data.isAllowed(arc)) {
+        			labelId = arc.getDestination().getId();
 	        		//Si le label de l'arc n'existe pas on l'initialise
-	        		if(labels[arc.getDestination().getId()] == null) {
-	        			labels[arc.getDestination().getId()] = new Label(arc.getDestination());
+	        		if(labels[labelId] == null) {
+	        			labels[labelId] = new Label(arc.getDestination());
 	        	        //observateur 1er passage
 	        	        this.notifyNodeReached(arc.getDestination());
-	        	        labels[arc.getDestination().getId()].setCost(labelx.getCost() + data.getCost(arc));
-        				heap.insert(labels[arc.getDestination().getId()]);
+	        	        labels[labelId].setCost(labelx.getCost() + data.getCost(arc));
+        				heap.insert(labels[labelId]);
         				//On modifie son "père"
-        				labels[arc.getDestination().getId()].setFather(labelx.getNoeud());
+        				labels[labelId].setFather(labelx.getNoeud());
 	        		}
 	        		
 	        		//Si coût actuel du noeud > au cout nouveau on l'actualise et si l'arc est autorisé au mode de transport
-	        		else if(labels[arc.getDestination().getId()].getCost() > labelx.getCost() + data.getCost(arc)) {
+	        		else if(labels[labelId].getCost() > labelx.getCost() + data.getCost(arc)) {
 	       				try {
 	       					//On supprime le label pour le remettre avec sa mark modifiée
-	       					heap.remove(labels[arc.getDestination().getId()]);
+	       					heap.remove(labels[labelId]);
 	       				} catch(ElementNotFoundException e) {
-	       					System.out.println("Erreur de suppression du noeud " +  arc.getDestination().getId());
+	       					System.out.println("Erreur de suppression du noeud " +  labelId);
 	       				} finally {
-	       					labels[arc.getDestination().getId()].setCost(labelx.getCost() + data.getCost(arc));
-	       					heap.insert(labels[arc.getDestination().getId()]);
+	       					labels[labelId].setCost(labelx.getCost() + data.getCost(arc));
+	       					heap.insert(labels[labelId]);
 	       					//On modifie son "père"
-	       					labels[arc.getDestination().getId()].setFather(labelx.getNoeud());
+	       					labels[labelId].setFather(labelx.getNoeud());
 	       				}
 	        		}
         		}
-        		//System.out.println(labels[arc.getDestination().getId()].getCost());
+        		//System.out.println(labels[labelId].getCost());
         	}
         }
         ShortestPathSolution solution = null;
