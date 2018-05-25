@@ -5,7 +5,7 @@ import org.insa.graph.Node;
 public class Label implements Comparable<Label> {
 
 	private Node noeud;
-	private double cost;
+	protected double cost;
 	private Node father;
 	private int mark;
 	
@@ -38,14 +38,23 @@ public class Label implements Comparable<Label> {
     public void setFather(Node father) {
     	this.father = father;
     }
-    
+    public double getTotalCost() {
+    	return this.cost;
+    }
+    public double getCoutMin() {
+    	return 0;
+    }
     public int compareTo(Label l) {
-    	if(this.cost < l.cost) {
+    	if(this.getTotalCost() < l.getTotalCost()) {
     		return -1;
-    	} else if (this.cost > l.cost) {
+    	} else if (this.getTotalCost() > l.getTotalCost()) {
     		return 1;
     	} else {
-    		return 0;
+    		if(this.getCoutMin() < l.getCoutMin()) {
+    			return -1;
+    		} else {
+    			return 1;
+    		}
     	}
     }
 }

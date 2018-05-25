@@ -69,33 +69,32 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         	//On récupère ses noeuds adjacents et on boucle sur les arcs
         	noeudx = labelx.getNoeud();
         	for(Arc arc : noeudx) {
-        		//Si le label de l'arc n'existe pas on l'initialise
-        		if(labels[arc.getDestination().getId()] == null) {
-        			labels[arc.getDestination().getId()] = new Label(arc.getDestination());
-        	        //observateur 1er passage
-        	        this.notifyNodeReached(arc.getDestination());
-        		}
-        		
-        		//Si coût actuel du noeud > au cout nouveau on l'actualise et si l'arc est autorisé au mode de transport
-        		if(labels[arc.getDestination().getId()].getCost() > labelx.getCost() + data.getCost(arc) && data.isAllowed(arc)) {
-        			if(labels[arc.getDestination().getId()].getCost() == Double.POSITIVE_INFINITY) {
-        				labels[arc.getDestination().getId()].setCost(labelx.getCost() + data.getCost(arc));
+        		if(data.isAllowed(arc)) {
+	        		//Si le label de l'arc n'existe pas on l'initialise
+	        		if(labels[arc.getDestination().getId()] == null) {
+	        			labels[arc.getDestination().getId()] = new Label(arc.getDestination());
+	        	        //observateur 1er passage
+	        	        this.notifyNodeReached(arc.getDestination());
+	        	        labels[arc.getDestination().getId()].setCost(labelx.getCost() + data.getCost(arc));
         				heap.insert(labels[arc.getDestination().getId()]);
         				//On modifie son "père"
         				labels[arc.getDestination().getId()].setFather(labelx.getNoeud());
-        			} else {
-        				try {
-        					//On supprime le label pour le remettre avec sa mark modifiée
-        					heap.remove(labels[arc.getDestination().getId()]);
-        				} catch(ElementNotFoundException e) {
-        					System.out.println("Erreur de suppression du noeud " +  arc.getDestination().getId());
-        				} finally {
-        					labels[arc.getDestination().getId()].setCost(labelx.getCost() + data.getCost(arc));
-        					heap.insert(labels[arc.getDestination().getId()]);
-        					//On modifie son "père"
-        					labels[arc.getDestination().getId()].setFather(labelx.getNoeud());
-        				}
-        			}
+	        		}
+	        		
+	        		//Si coût actuel du noeud > au cout nouveau on l'actualise et si l'arc est autorisé au mode de transport
+	        		else if(labels[arc.getDestination().getId()].getCost() > labelx.getCost() + data.getCost(arc)) {
+	       				try {
+	       					//On supprime le label pour le remettre avec sa mark modifiée
+	       					heap.remove(labels[arc.getDestination().getId()]);
+	       				} catch(ElementNotFoundException e) {
+	       					System.out.println("Erreur de suppression du noeud " +  arc.getDestination().getId());
+	       				} finally {
+	       					labels[arc.getDestination().getId()].setCost(labelx.getCost() + data.getCost(arc));
+	       					heap.insert(labels[arc.getDestination().getId()]);
+	       					//On modifie son "père"
+	       					labels[arc.getDestination().getId()].setFather(labelx.getNoeud());
+	       				}
+	        		}
         		}
         		//System.out.println(labels[arc.getDestination().getId()].getCost());
         	}
@@ -121,10 +120,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
      		// Create the final solution.
      		if(data.getMode() == Mode.LENGTH) {
          		solution = new ShortestPathSolution(data, Status.OPTIMAL, Path.createShortestPathFromNodes(graph, nodes));
-         		System.out.println(data.getMode());
      		} else if(data.getMode() == Mode.TIME) {
          		solution = new ShortestPathSolution(data, Status.OPTIMAL, Path.createFastestPathFromNodes(graph, nodes));
-         		System.out.println(data.getMode());
      		} else {
          		solution = new ShortestPathSolution(data, Status.OPTIMAL, Path.createShortestPathFromNodes(graph, nodes));
      		}

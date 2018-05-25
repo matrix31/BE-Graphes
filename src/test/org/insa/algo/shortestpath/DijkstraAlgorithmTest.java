@@ -177,6 +177,32 @@ public class DijkstraAlgorithmTest {
         assertTrue(Solutions[0].getPath().getArcs().equals(Solutions[1].getPath().getArcs()));
     }
     
+    @Test 
+    // TEST Sans Oracle
+    public void testDijkstraNoOracle() throws Exception { 	
+    	String mapName = "/home/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/midi-pyrenees.mapgr";
+    	List<ArcInspector> filters = ArcInspectorFactory.getAllFilters();
+        // Create a graph reader.
+        GraphReader reader = new BinaryGraphReader(
+        new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
+        //Read the graph.
+        Graph graph = reader.read();
+        int nbNode = graph.size();
+        int originId = (int) Math.random()*nbNode;
+        int destinationId = (int) Math.random()*nbNode;
+        Node origin = graph.get(originId);
+        Node destination = graph.get(destinationId);
+        ShortestPathData data = new ShortestPathData(graph, origin, destination, filters.get(1));
+        //solution Dijkstra
+      	DijkstraAlgorithm algoD = new DijkstraAlgorithm(data);
+      	ShortestPathSolution solution = algoD.doRun();
+      	int solutionSize = solution.getPath().size();
+      	List<Arc> Arcs = solution.getPath().getArcs();
+      	Arc arcMilieu = Arcs.get((int) solutionSize/2);
+      	Node arcNode = arcMilieu.getOrigin();
+      	
+      	//On a récupéré le milieu du chemin refaire 2 chemin du début au milieu puis du milieu a la fin et comparer la somme des distances à l'autre
+    }
     
     // Méthodes pour les test
     /* @param : String mapName
