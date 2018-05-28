@@ -20,7 +20,6 @@ public class LabelStar extends Label implements Comparable<Label> {
 	public double getTotalCost() {
 		return this.coutmin + this.cost;
 	}
-	
 	public void setCoutMin(double val) {
 		this.coutmin = val;
 	}

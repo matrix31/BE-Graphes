@@ -15,7 +15,9 @@ import org.insa.graph.Path;
 
 public class AStarAlgorithm extends DijkstraAlgorithm {
 
-    public AStarAlgorithm(ShortestPathData data) {
+    private static final Mode LENGHT = null;
+	private static final Mode TIME = null;
+	public AStarAlgorithm(ShortestPathData data) {
         super(data);
     }
     @Override
@@ -32,7 +34,11 @@ public class AStarAlgorithm extends DijkstraAlgorithm {
         //Init label premier sommet
         labels[data.getOrigin().getId()] = new LabelStar(data.getOrigin());
         labels[data.getOrigin().getId()].setCost(0);
-        labels[data.getOrigin().getId()].setCoutMin(data.getOrigin().getPoint().distanceTo(data.getDestination().getPoint()));
+        if(data.getMode() == LENGHT) {
+        	labels[data.getOrigin().getId()].setCoutMin(data.getOrigin().getPoint().distanceTo(data.getDestination().getPoint()));
+        } else if(data.getMode() == TIME) {																																																													
+        	labels[data.getOrigin().getId()].setCoutMin(data.getOrigin().getPoint().distanceTo(data.getDestination().getPoint()) / data.getMaximumSpeed());
+        }
         //observateur origine
         this.notifyOriginProcessed(data.getOrigin());
         
@@ -67,14 +73,22 @@ public class AStarAlgorithm extends DijkstraAlgorithm {
         	//On récupère ses noeuds adjacents et on boucle sur les arcs
         	noeudx = labelx.getNoeud();
         	int labelId;
+        	double coutmin = 0;
         	for(Arc arc : noeudx) {
-        		if(data.isAllowed(arc) ) {
+        		if(data.isAllowed(arc)) {
         			labelId = arc.getDestination().getId();
 	        		//Si le label de l'arc n'existe pas on l'initialise
 	        		if(labels[labelId] == null) {
 	        			labels[labelId] = new LabelStar(arc.getDestination());
-	        			labels[labelId].setCoutMin(arc.getDestination().getPoint().distanceTo(data.getDestination().getPoint()));
-	        	        //observateur 1er passage
+	        			if(data.getMode() == Mode.LENGTH) {	
+	        				coutmin = arc.getDestination().getPoint().distanceTo(data.getDestination().getPoint());
+	        			}
+	        	        else if(data.getMode() == Mode.TIME) {																																																												
+	        	        	coutmin = arc.getDestination().getPoint().distanceTo(data.getDestination().getPoint()) / data.getGraph().getGraphInformation().getMaximumSpeed();
+	        	         }
+	        			labels[labelId].setCoutMin(coutmin);
+	        			
+	        			//observateur 1er passage
 	        	        this.notifyNodeReached(arc.getDestination());
 	        	        //On le met dans le tas
 	        	        labels[labelId].setCost(labelx.getCost() + data.getCost(arc));
@@ -83,6 +97,7 @@ public class AStarAlgorithm extends DijkstraAlgorithm {
         				labels[labelId].setFather(labelx.getNoeud());
 	        		}
 	        		//Si coût actuel du noeud > au cout nouveau on l'actualise et si l'arc est autorisé au mode de transport
+	        		
 	        		else if(labels[labelId].getCost() > labelx.getCost() + data.getCost(arc) && labels[labelId].getMark() == 0) {
 	        			try {
 	        				//On supprime le label pour le remettre avec sa mark modifiée
@@ -90,7 +105,7 @@ public class AStarAlgorithm extends DijkstraAlgorithm {
 	       				} catch(ElementNotFoundException e) {
 	       					System.out.println("Erreur de suppression du noeud " +  labelId);
 	       				} finally {
-	       					labels[labelId].setCost(labelx.getCost() + data.getCost(arc));
+	        	        	labels[labelId].setCost(labelx.getCost() + data.getCost(arc));
 	       					heap.insert(labels[labelId]);
 	       					//On modifie son "père"
 	       					labels[labelId].setFather(labelx.getNoeud());
