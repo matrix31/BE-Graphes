@@ -76,7 +76,6 @@ public class DijkstraAlgorithmTest {
 
     }
    
-    /*
     @Test
     public void testDijkstra() {
     	List<ArcInspector> filters = ArcInspectorFactory.getAllFilters();
@@ -136,8 +135,8 @@ public class DijkstraAlgorithmTest {
     	}
     	System.out.print("\n");
     }
-    */    	
-    	/*	
+    
+       	
     @Test
     // Test simple en distance
     public void testDijkstraLength() throws Exception { 	
@@ -210,9 +209,10 @@ public class DijkstraAlgorithmTest {
       	//On a récupéré le milieu du chemin refaire 2 chemin du début au milieu puis du milieu a la fin et comparer la somme des distances à l'autre
     }
  
-    */
-    @Test // on peut changer les cartes et les filters 
-    public void TestPerformanceDijkstra() throws Exception{
+    @Test
+    // Dijkstra vs Astar 
+    // on peut changer les cartes et les filters 
+    public void TestPerformanceDijkstra_Astar() throws Exception{
     	
     	int compteurDij= 0 ;
     	int compteurAstar = 0 ;
@@ -228,12 +228,12 @@ public class DijkstraAlgorithmTest {
     int nbNode = graph.getSize();
     	
     	  
-    for ( int i=0;i<10000;i+=1) {
+    for ( int i=0;i<1000;i+=1) {
     		int originId = (int) Math.random()*nbNode;
 	    int destinationId = (int) Math.random()*nbNode;
 	    Node origin = graph.get(originId);
 	    Node destination = graph.get(destinationId);
-	    ShortestPathData data = new ShortestPathData(graph, origin, destination, filters.get(1));
+	    ShortestPathData data = new ShortestPathData(graph, origin, destination, filters.get(4));
 
 	    DijkstraAlgorithm algoD = new DijkstraAlgorithm(data);
 	    AStarAlgorithm algoA = new AStarAlgorithm(data);
@@ -252,32 +252,94 @@ public class DijkstraAlgorithmTest {
 	    			egalite++;	
 	    		}
 	    		else {
-	    			compteurDij++;
+	    			compteurAstar++;
 		    		
 	    		}
 	    	}
         if ( tempsDijkstra < tempsAstar) {
-        		if ( (tempsDijkstra / tempsAstar ) >= 0.95 ) {
+        		if ( (tempsDijkstra / tempsAstar ) >= 0.95) {
         			egalite++;
         		}
         		else {
-        			compteurAstar++;
+        			compteurDij++;
         		}
         	if (tempsDijkstra == tempsAstar) {
         		egalite++; // a la milliseconde pres 
         	}
       } 
    }
-  System.out.println("Echantillons testes : 100");
+  System.out.println("Echantillons testes : 1000");
   System.out.println("Dijkstra plus performant sur "+ compteurDij+ " tests");
   System.out.println("Astar plus performant sur "+ compteurAstar+ " tests");
-  System.out.println("Egalité à 5% près sur "+ egalite+ " test(s)"); 
+  System.out.println("Egalité à 5% près pour "+ egalite+ " test(s)"); 
  }
-   
  
-  
+    @Test
+    // Dijkstra vs BF 
+    // on peut changer les cartes et les filters 
+    public void TestPerformanceDijkstra_BF() throws Exception{
+    	
+    	int compteurDij= 0 ;
+    	int compteurBF = 0 ;
+    	int egalite = 0 ;   //egalite a 5%
+    	
+    	List<ArcInspector> filters = ArcInspectorFactory.getAllFilters();
+		String mapName = "/Users/franck/Desktop/toulouse.mapgr";
+	// Create a graph reader.
+    GraphReader reader = new BinaryGraphReader(
+    new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
+    //Read the graph.
+    graph = reader.read();
+    int nbNode = graph.getSize();
+    	
+    	  
+    for ( int i=0;i<100;i+=1) {
+    		int originId = (int) Math.random()*nbNode;
+	    int destinationId = (int) Math.random()*nbNode;
+	    Node origin = graph.get(originId);
+	    Node destination = graph.get(destinationId);
+	    ShortestPathData data = new ShortestPathData(graph, origin, destination, filters.get(1));
 
-    
+	    BellmanFordAlgorithm algoBF = new BellmanFordAlgorithm(data);
+	    DijkstraAlgorithm algoD = new DijkstraAlgorithm(data);
+	    
+	    // calcul temps d'execution 
+	    long debutBF = System.nanoTime();
+	    ShortestPathSolution solution = algoBF.doRun();
+	    long tempsBF = (System.nanoTime()-debutBF); 
+	    
+	    long debut_Dijkstra = System.nanoTime(); 
+        ShortestPathSolution solutionD = algoD.doRun();
+        long tempsDijkstra = (System.nanoTime()-debut_Dijkstra) ; // temps en ms
+    		
+        if (tempsDijkstra > tempsBF) {
+	    		if (  (tempsBF/ tempsDijkstra) >= 0.95) {
+	    			egalite++;	
+	    		}
+	    		else {
+	    			compteurBF++;
+		    		
+	    		}
+	    	}
+        if ( tempsDijkstra < tempsBF) {
+        		if ( (tempsDijkstra / tempsBF ) >= 0.95 ) {
+        			egalite++;
+        		}
+        		else {
+        			compteurDij++;
+        		}
+        	if (tempsDijkstra == tempsBF) {
+        		egalite++;  
+        	}
+      } 
+   }
+  System.out.println("Echantillons testes : 100");
+  System.out.println("Dijkstra plus performant sur "+ compteurDij+ " tests");
+  System.out.println("Bellman-Ford plus performant sur "+ compteurBF+ " tests");
+  System.out.println("Egalité à 5% près pour "+ egalite+ " test(s)"); 
+ }
+ 
+     
     // Méthodes pour les test
     /* @param : String mapName
      * 			int originId
