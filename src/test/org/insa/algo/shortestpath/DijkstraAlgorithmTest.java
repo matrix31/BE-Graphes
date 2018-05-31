@@ -1,6 +1,8 @@
 package org.insa.algo.shortestpath;
 
+
 import static org.junit.Assert.*;
+
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -25,6 +27,9 @@ import org.insa.graph.io.GraphReader;
 import org.insa.graph.io.PathReader;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import java.util.Random;
+import static java.lang.Math.abs;
+
 
 public class DijkstraAlgorithmTest {
 	public enum Status {
@@ -70,7 +75,8 @@ public class DijkstraAlgorithmTest {
         graph = new Graph("ID", "", Arrays.asList(nodes), null);
 
     }
-    
+   
+    /*
     @Test
     public void testDijkstra() {
     	List<ArcInspector> filters = ArcInspectorFactory.getAllFilters();
@@ -107,7 +113,7 @@ public class DijkstraAlgorithmTest {
     		}
     	}
     	//Visualisation dans la console//
-    	/*for (int i = 0; i < nodes.length; ++i) {
+    	for (int i = 0; i < nodes.length; ++i) {
     		for (int j = 0; j < nodes.length; ++j) {
     			if(solD[i][j] != -1) {
     				System.out.print((int) solD[i][j] + " ");
@@ -128,10 +134,10 @@ public class DijkstraAlgorithmTest {
     		}
     		System.out.print("\n");
     	}
-    	System.out.print("\n");*/
+    	System.out.print("\n");
     }
-    
-    
+    */    	
+    	/*	
     @Test
     // Test simple en distance
     public void testDijkstraLength() throws Exception { 	
@@ -203,6 +209,74 @@ public class DijkstraAlgorithmTest {
       	
       	//On a récupéré le milieu du chemin refaire 2 chemin du début au milieu puis du milieu a la fin et comparer la somme des distances à l'autre
     }
+ 
+    */
+    @Test // on peut changer les cartes et les filters 
+    public void TestPerformanceDijkstra() throws Exception{
+    	
+    	int compteurDij= 0 ;
+    	int compteurAstar = 0 ;
+    	int egalite = 0 ;   //egalite a 5%
+    	
+    	List<ArcInspector> filters = ArcInspectorFactory.getAllFilters();
+		String mapName = "/Users/franck/Desktop/haute-garonne.mapgr";
+	// Create a graph reader.
+    GraphReader reader = new BinaryGraphReader(
+    new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
+    //Read the graph.
+    graph = reader.read();
+    int nbNode = graph.getSize();
+    	
+    	  
+    for ( int i=0;i<10000;i+=1) {
+    		int originId = (int) Math.random()*nbNode;
+	    int destinationId = (int) Math.random()*nbNode;
+	    Node origin = graph.get(originId);
+	    Node destination = graph.get(destinationId);
+	    ShortestPathData data = new ShortestPathData(graph, origin, destination, filters.get(1));
+
+	    DijkstraAlgorithm algoD = new DijkstraAlgorithm(data);
+	    AStarAlgorithm algoA = new AStarAlgorithm(data);
+	    
+	    // calcul temps d'execution 
+	    long debutAstar = System.nanoTime();
+	    ShortestPathSolution solution = algoA.doRun();
+	    long tempsAstar = (System.nanoTime()-debutAstar); 
+	    
+	    long debut_Dijkstra = System.nanoTime(); 
+        ShortestPathSolution solutionD = algoD.doRun();
+        long tempsDijkstra = (System.nanoTime()-debut_Dijkstra) ; // temps en ms
+    		
+        if (tempsDijkstra > tempsAstar) {
+	    		if (  (tempsAstar/ tempsDijkstra) >= 0.95) {
+	    			egalite++;	
+	    		}
+	    		else {
+	    			compteurDij++;
+		    		
+	    		}
+	    	}
+        if ( tempsDijkstra < tempsAstar) {
+        		if ( (tempsDijkstra / tempsAstar ) >= 0.95 ) {
+        			egalite++;
+        		}
+        		else {
+        			compteurAstar++;
+        		}
+        	if (tempsDijkstra == tempsAstar) {
+        		egalite++; // a la milliseconde pres 
+        	}
+      } 
+   }
+  System.out.println("Echantillons testes : 100");
+  System.out.println("Dijkstra plus performant sur "+ compteurDij+ " tests");
+  System.out.println("Astar plus performant sur "+ compteurAstar+ " tests");
+  System.out.println("Egalité à 5% près sur "+ egalite+ " test(s)"); 
+ }
+   
+ 
+  
+
     
     // Méthodes pour les test
     /* @param : String mapName

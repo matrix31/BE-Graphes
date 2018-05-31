@@ -14,7 +14,6 @@ import org.insa.graph.Node;
 import org.insa.graph.Path;
 
 public class AStarAlgorithm extends DijkstraAlgorithm {
-
     private static final Mode LENGHT = null;
 	private static final Mode TIME = null;
 	public AStarAlgorithm(ShortestPathData data) {

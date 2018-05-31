@@ -115,4 +115,8 @@ public final class Graph implements Iterable<Node> {
         return new Graph("R/" + mapId, mapName, trNodes, graphStatistics);
     }
 
+	public int getSize() {
+		return this.nodes.size();
+	}
+
 }

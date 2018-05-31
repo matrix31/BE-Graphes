@@ -11,7 +11,7 @@ import org.insa.graph.Node;
 import org.insa.graph.Path;
 
 public class BellmanFordAlgorithm extends ShortestPathAlgorithm {
-
+	long debut = System.currentTimeMillis(); // calcul du temps d'execution
 	public BellmanFordAlgorithm(ShortestPathData data) {
 		super(data);
 	}
@@ -90,9 +90,9 @@ public class BellmanFordAlgorithm extends ShortestPathAlgorithm {
 			Collections.reverse(arcs);
 
 			// Create the final solution.
-			solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph, arcs));
-		}
-
+			solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph, arcs)); 		
+			}
+		System.out.println(System.currentTimeMillis()-debut);
 		return solution;
 	}
 
