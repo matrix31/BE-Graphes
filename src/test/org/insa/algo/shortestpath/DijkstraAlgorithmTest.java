@@ -219,7 +219,7 @@ public class DijkstraAlgorithmTest {
     	int egalite = 0 ;   //egalite a 5%
     	
     	List<ArcInspector> filters = ArcInspectorFactory.getAllFilters();
-		String mapName = "/Users/franck/Desktop/haute-garonne.mapgr";
+		String mapName = "/Users/franck/Desktop/france.mapgr";
 	// Create a graph reader.
     GraphReader reader = new BinaryGraphReader(
     new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
@@ -228,7 +228,7 @@ public class DijkstraAlgorithmTest {
     int nbNode = graph.getSize();
     	
     	  
-    for ( int i=0;i<1000;i+=1) {
+    for ( int i=0;i<100;i+=1) {
     		int originId = (int) Math.random()*nbNode;
 	    int destinationId = (int) Math.random()*nbNode;
 	    Node origin = graph.get(originId);
