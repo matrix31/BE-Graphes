@@ -138,23 +138,34 @@ public class DijkstraAlgorithmTest {
     
        	
     @Test
-    // Test simple en distance
-    public void testDijkstraLength() throws Exception { 	
-    	String mapName = "/home/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/insa.mapgr";
-        ShortestPathSolution[] Solutions = new ShortestPathSolution[2];
-        Solutions = TestDijkstraBF(mapName,103,675,0);
-        assertTrue(Solutions[0].getPath().getArcs().equals(Solutions[1].getPath().getArcs()));
+    // Test simple en distance sur 100 tests
+    // ne mache que sur 10 tests --> null pointeur exception 
+    public void testDijkstraLength() throws Exception { 
+    	int compteur = 0 ;
+    	int nbNode = graph.getSize();
+    	String mapName = "/home/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/toulouse.mapgr";
+    	for (int i=0 ; i<100 ; i++){
+    		int originId = (int) (Math.random()*nbNode); // generation des id aléatoires
+	   		int destinationId = (int) (Math.random()*nbNode);
+	        ShortestPathSolution[] Solutions = new ShortestPathSolution[2];
+	        Solutions = TestDijkstraBF(mapName,originId,destinationId,0);
+	        if (Solutions[0].getPath().getArcs().equals(Solutions[1].getPath().getArcs())){
+	        	compteur++;
+	        }
+    	}
+    assertTrue(compteur==100);
+	        
     }
     
     @Test
     // Test simple en temps
     public void testDijkstraTime() throws Exception { 	
-    	String mapName = "/home/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/insa.mapgr";
+    	String mapName = "/home/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/toulouse.mapgr";
         ShortestPathSolution[] Solutions = new ShortestPathSolution[2];
         Solutions = TestDijkstraBF(mapName,103,675,5);
         assertTrue(Solutions[0].getPath().getArcs().equals(Solutions[1].getPath().getArcs()));
     }
-    
+    /*
     @Test 
     // Chemin inexistant
     public void testDijkstraNoWay() throws Exception { 	
@@ -193,8 +204,8 @@ public class DijkstraAlgorithmTest {
         //Read the graph.
         Graph graph = reader.read();
         int nbNode = graph.size();
-        int originId = (int) Math.random()*nbNode;
-        int destinationId = (int) Math.random()*nbNode;
+        int originId = (int) (Math.random()*nbNode);
+        int destinationId = (int)( Math.random()*nbNode);
         Node origin = graph.get(originId);
         Node destination = graph.get(destinationId);
         ShortestPathData data = new ShortestPathData(graph, origin, destination, filters.get(1));
@@ -208,18 +219,19 @@ public class DijkstraAlgorithmTest {
       	
       	//On a récupéré le milieu du chemin refaire 2 chemin du début au milieu puis du milieu a la fin et comparer la somme des distances à l'autre
     }
- 
+ */
     @Test
     // Dijkstra vs Astar 
     // on peut changer les cartes et les filters 
+    
     public void TestPerformanceDijkstra_Astar() throws Exception{
     	
     	int compteurDij= 0 ;
     	int compteurAstar = 0 ;
-    	int egalite = 0 ;   //egalite a 5%
+    	int egalite = 0 ;   //egalite a 3%
     	
     	List<ArcInspector> filters = ArcInspectorFactory.getAllFilters();
-		String mapName = "/Users/franck/Desktop/france.mapgr";
+    	String mapName = "/home/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/midi-pyrenees.mapgr";
 	// Create a graph reader.
     GraphReader reader = new BinaryGraphReader(
     new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
@@ -229,26 +241,28 @@ public class DijkstraAlgorithmTest {
     	
     	  
     for ( int i=0;i<100;i+=1) {
-    		int originId = (int) Math.random()*nbNode;
-	    int destinationId = (int) Math.random()*nbNode;
+    	int originId = (int) (Math.random()*nbNode); // generation des id aléatoires
+	    int destinationId = (int) (Math.random()*nbNode);
 	    Node origin = graph.get(originId);
 	    Node destination = graph.get(destinationId);
-	    ShortestPathData data = new ShortestPathData(graph, origin, destination, filters.get(4));
+	    ShortestPathData data = new ShortestPathData(graph, origin, destination, filters.get(2));
 
 	    DijkstraAlgorithm algoD = new DijkstraAlgorithm(data);
 	    AStarAlgorithm algoA = new AStarAlgorithm(data);
 	    
+	    System.out.println(originId);
 	    // calcul temps d'execution 
 	    long debutAstar = System.nanoTime();
-	    ShortestPathSolution solution = algoA.doRun();
+	    ShortestPathSolution solution = algoA.run();
 	    long tempsAstar = (System.nanoTime()-debutAstar); 
 	    
 	    long debut_Dijkstra = System.nanoTime(); 
-        ShortestPathSolution solutionD = algoD.doRun();
+        ShortestPathSolution solutionD = algoD.run();
         long tempsDijkstra = (System.nanoTime()-debut_Dijkstra) ; // temps en ms
-    		
+       //System.out.println(solution.getPath().getLength());
+        
         if (tempsDijkstra > tempsAstar) {
-	    		if (  (tempsAstar/ tempsDijkstra) >= 0.95) {
+	    		if (  (tempsAstar/ tempsDijkstra) >= 0.97) {
 	    			egalite++;	
 	    		}
 	    		else {
@@ -257,7 +271,7 @@ public class DijkstraAlgorithmTest {
 	    		}
 	    	}
         if ( tempsDijkstra < tempsAstar) {
-        		if ( (tempsDijkstra / tempsAstar ) >= 0.95) {
+        		if ( (tempsDijkstra / tempsAstar ) >= 0.97) {
         			egalite++;
         		}
         		else {
@@ -267,13 +281,15 @@ public class DijkstraAlgorithmTest {
         		egalite++; // a la milliseconde pres 
         	}
       } 
+      System.out.println(i);
    }
-  System.out.println("Echantillons testes : 1000");
+  System.out.println("Echantillons testes : 100");
   System.out.println("Dijkstra plus performant sur "+ compteurDij+ " tests");
   System.out.println("Astar plus performant sur "+ compteurAstar+ " tests");
-  System.out.println("Egalité à 5% près pour "+ egalite+ " test(s)"); 
+  System.out.println("Egalité à 3% près pour "+ egalite+ " test(s)"); 
  }
- 
+
+ /*
     @Test
     // Dijkstra vs BF 
     // on peut changer les cartes et les filters 
@@ -294,8 +310,8 @@ public class DijkstraAlgorithmTest {
     	
     	  
     for ( int i=0;i<100;i+=1) {
-    		int originId = (int) Math.random()*nbNode;
-	    int destinationId = (int) Math.random()*nbNode;
+    		int originId = (int) (Math.random()*nbNode);
+	    int destinationId = (int)( Math.random()*nbNode);
 	    Node origin = graph.get(originId);
 	    Node destination = graph.get(destinationId);
 	    ShortestPathData data = new ShortestPathData(graph, origin, destination, filters.get(1));
@@ -347,6 +363,7 @@ public class DijkstraAlgorithmTest {
      * 			int filterId
      * @return : ShortestPathSolution[2] Tableau avec les 2 solutions (Dijstra et Bellman-Ford)
      */
+   
     private ShortestPathSolution[] TestDijkstraBF(String mapName, int originId, int destinationId, int filterId) throws Exception {
         List<ArcInspector> filters = ArcInspectorFactory.getAllFilters();
         ShortestPathSolution[] Solutions = new ShortestPathSolution[2];
@@ -366,4 +383,26 @@ public class DijkstraAlgorithmTest {
         Solutions[1] = algoBF.doRun();
         return Solutions;
     }
+    
+    private ShortestPathSolution[] TestDijkstra_Astar(String mapName, int originId, int destinationId, int filterId) throws Exception {
+        List<ArcInspector> filters = ArcInspectorFactory.getAllFilters();
+        ShortestPathSolution[] Solutions = new ShortestPathSolution[2];
+        // Create a graph reader.
+        GraphReader reader = new BinaryGraphReader(
+        new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
+        //Read the graph.
+        Graph graph = reader.read();
+        Node origin = graph.get(originId);
+        Node destination = graph.get(destinationId);
+        ShortestPathData data = new ShortestPathData(graph, origin, destination, filters.get(filterId));
+        //solution Dijkstra
+      	DijkstraAlgorithm algoD = new DijkstraAlgorithm(data);
+      	Solutions[0] = algoD.doRun();
+        //Solution Astar
+        AStarAlgorithm algoAstar = new AStarAlgorithm(data);
+        Solutions[1] = algoAstar.doRun();
+        return Solutions;
+    }
 }
+
+
