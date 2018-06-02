@@ -197,6 +197,38 @@ public class ArcInspectorFactory {
                 return "Fastest path, all roads allowed";
             }
         });
+        filters.add(new ArcInspector() {
+
+            @Override
+            public boolean isAllowed(Arc arc) {
+                return arc.getRoadInformation().getAccessRestrictions()
+                        .isAllowedForAny(AccessMode.FOOT, EnumSet.complementOf(EnumSet
+                                .of(AccessRestriction.FORBIDDEN, AccessRestriction.PRIVATE)));
+            }
+
+            @Override
+            public double getCost(Arc arc) {
+                return arc.getTravelTime(
+                        Math.min(getMaximumSpeed(), arc.getRoadInformation().getMaximumSpeed()));
+            }
+
+            @Override
+            public String toString() {
+                return "Shortest path for pedestrian";
+            }
+
+            @Override
+            public int getMaximumSpeed() {
+                return 5;
+            }
+
+            @Override
+            public Mode getMode() {
+                return Mode.TIME;
+            }
+            
+        
+        });
         return filters;
     }
 

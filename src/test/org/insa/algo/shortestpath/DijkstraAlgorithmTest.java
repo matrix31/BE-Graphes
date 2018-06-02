@@ -151,7 +151,7 @@ public class DijkstraAlgorithmTest {
     			int originId = (int) (Math.random()*nbNode); // generation des id aléatoires
 	   		int destinationId = (int) (Math.random()*nbNode);
 	        ShortestPathSolution[] Solutions = new ShortestPathSolution[2];
-	        Solutions = TestDijkstraBF(mapName,originId,destinationId,0);
+	        Solutions = TestDijkstraBF(mapName,originId,destinationId,6);
 	        System.out.println(Solutions[1].isFeasible());
 	        if ( Solutions[0].isFeasible() == false || Solutions[1].isFeasible() == false ) {
 	        		nbrTest_faisable-- ;// on ne prend pas en compte le test si le chemin n'est pas faisable
@@ -253,9 +253,10 @@ public class DijkstraAlgorithmTest {
     @Test 
     // Chemin avec des routes interdites aux voitures
     public void testDijkstraNoCarAllowed() throws Exception { 	
-    	String mapName = "/home/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/toulouse.mapgr";
+    	String mapName = "/Users/franck/Desktop/toulouse.mapgr";
     	ShortestPathSolution[] Solutions = new ShortestPathSolution[2];
         Solutions = TestDijkstraBF(mapName,3669,17290,1);
+        //System.out.println(Solutions[0].getPath());
         assertTrue(Solutions[0].getPath().getArcs().equals(Solutions[1].getPath().getArcs()));
     }
     
@@ -286,140 +287,7 @@ public class DijkstraAlgorithmTest {
       	//On a récupéré le milieu du chemin refaire 2 chemin du début au milieu puis du milieu a la fin et comparer la somme des distances à l'autre
     }
  
-    @Test
-    // Dijkstra vs Astar 
-    // on peut changer les cartes et les filters 
-    
-    public void TestPerformanceDijkstra_Astar() throws Exception{
-    	
-    	int compteurDij= 0 ;
-    	int compteurAstar = 0 ;
-    	int egalite = 0 ;   //egalite a 3%
-    	
-    	List<ArcInspector> filters = ArcInspectorFactory.getAllFilters();
-    	String mapName = "/Users/franck/Desktop/haute-garonne.mapgr";
-	// Create a graph reader.
-    GraphReader reader = new BinaryGraphReader(
-    new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
-    //Read the graph.
-    graph = reader.read();
-    int nbNode = graph.getSize();
-    	
-    	  
-    for ( int i=0;i<100;i+=1) {
-    	int originId = (int) (Math.random()*nbNode); // generation des id aléatoires
-	    int destinationId = (int) (Math.random()*nbNode);
-	    Node origin = graph.get(originId);
-	    Node destination = graph.get(destinationId);
-	    ShortestPathData data = new ShortestPathData(graph, origin, destination, filters.get(0));
 
-	    DijkstraAlgorithm algoD = new DijkstraAlgorithm(data);
-	    AStarAlgorithm algoA = new AStarAlgorithm(data);
-	    
-	    System.out.println(originId);
-	    // calcul temps d'execution 
-	    long debutAstar = System.nanoTime();
-	    ShortestPathSolution solution = algoA.run();
-	    long tempsAstar = (System.nanoTime()-debutAstar); 
-	    
-	    long debut_Dijkstra = System.nanoTime(); 
-        ShortestPathSolution solutionD = algoD.run();
-        long tempsDijkstra = (System.nanoTime()-debut_Dijkstra) ; // temps en ms
-       //System.out.println(solution.getPath().getLength());
-        
-        if (tempsDijkstra > tempsAstar) {
-	    		if (  (tempsAstar/ tempsDijkstra) >= 0.97) {
-	    			egalite++;	
-	    		}
-	    		else {
-	    			compteurAstar++;
-		    		
-	    		}
-	    	}
-        if ( tempsDijkstra < tempsAstar) {
-        		if ( (tempsDijkstra / tempsAstar ) >= 0.97) {
-        			egalite++;
-        		}
-        		else {
-        			compteurDij++;
-        		}
-        	if (tempsDijkstra == tempsAstar) {
-        		egalite++; // a la milliseconde pres 
-        	}
-      } 
-      System.out.println(i);
-   }
-  System.out.println("Echantillons testes : 100");
-  System.out.println("Dijkstra plus performant sur "+ compteurDij+ " tests");
-  System.out.println("Astar plus performant sur "+ compteurAstar+ " tests");
-  System.out.println("Egalité à 3% près pour "+ egalite+ " test(s)"); 
- }
-
- 
-    @Test
-    // Dijkstra vs BF 
-    // on peut changer les cartes et les filters 
-    public void TestPerformanceDijkstra_BF() throws Exception{
-    	
-    	int compteurDij= 0 ;
-    	int compteurBF = 0 ;
-    	int egalite = 0 ;   //egalite a 5%
-    	
-    	List<ArcInspector> filters = ArcInspectorFactory.getAllFilters();
-		String mapName = "/Users/franck/Desktop/toulouse.mapgr";
-	// Create a graph reader.
-    GraphReader reader = new BinaryGraphReader(
-    new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
-    //Read the graph.
-    graph = reader.read();
-    int nbNode = graph.getSize();
-    	
-    	  
-    for ( int i=0;i<10;i+=1) {
-    		int originId = (int) (Math.random()*nbNode);
-	    int destinationId = (int)( Math.random()*nbNode);
-	    Node origin = graph.get(originId);
-	    Node destination = graph.get(destinationId);
-	    ShortestPathData data = new ShortestPathData(graph, origin, destination, filters.get(1));
-
-	    BellmanFordAlgorithm algoBF = new BellmanFordAlgorithm(data);
-	    DijkstraAlgorithm algoD = new DijkstraAlgorithm(data);
-	    
-	    // calcul temps d'execution 
-	    long debutBF = System.nanoTime();
-	    ShortestPathSolution solution = algoBF.doRun();
-	    long tempsBF = (System.nanoTime()-debutBF); 
-	    
-	    long debut_Dijkstra = System.nanoTime(); 
-        ShortestPathSolution solutionD = algoD.doRun();
-        long tempsDijkstra = (System.nanoTime()-debut_Dijkstra) ; // temps en ms
-    		
-        if (tempsDijkstra > tempsBF) {
-	    		if (  (tempsBF/ tempsDijkstra) >= 0.95) {
-	    			egalite++;	
-	    		}
-	    		else {
-	    			compteurBF++;
-		    		
-	    		}
-	    	}
-        if ( tempsDijkstra < tempsBF) {
-        		if ( (tempsDijkstra / tempsBF ) >= 0.95 ) {
-        			egalite++;
-        		}
-        		else {
-        			compteurDij++;
-        		}
-        	if (tempsDijkstra == tempsBF) {
-        		egalite++;  
-        	}
-      } 
-   }
-  System.out.println("Echantillons testes : 100");
-  System.out.println("Dijkstra plus performant sur "+ compteurDij+ " tests");
-  System.out.println("Bellman-Ford plus performant sur "+ compteurBF+ " tests");
-  System.out.println("Egalité à 5% près pour "+ egalite+ " test(s)"); 
- }
  
      
     // Méthodes pour les test
