@@ -33,7 +33,7 @@ public class TestDijkstraPerformance {
 	    	int egalite = 0 ;   //egalite a 3%
 	    	
 	    	List<ArcInspector> filters = ArcInspectorFactory.getAllFilters();
-	    	String mapName = "/Users/franck/Desktop/haute-garonne.mapgr";
+	    	String mapName = "./src/maps/haute-garonne.mapgr";
 		// Create a graph reader.
 	    GraphReader reader = new BinaryGraphReader(
 	    new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
@@ -103,7 +103,7 @@ public class TestDijkstraPerformance {
 	    	int egalite = 0 ;   //egalite a 5%
 	    	
 	    	List<ArcInspector> filters = ArcInspectorFactory.getAllFilters();
-			String mapName = "/Users/franck/Desktop/toulouse.mapgr";
+			String mapName = "./src/maps/toulouse.mapgr";
 		// Create a graph reader.
 	    GraphReader reader = new BinaryGraphReader(
 	    new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));

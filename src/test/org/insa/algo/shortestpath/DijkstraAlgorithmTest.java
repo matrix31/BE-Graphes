@@ -38,6 +38,9 @@ public class DijkstraAlgorithmTest {
 	// Small graph use for tests
     private static Graph graph;
 
+    // Small graph use for tests
+    private static int nbtests = 2;
+    
     // List of nodes
     private static Node[] nodes;
 
@@ -141,17 +144,13 @@ public class DijkstraAlgorithmTest {
     // Test simple en distance sur 100 tests
     public void testDijkstraLength() throws Exception { 
     	int compteur = 0 ;
-    	int nbNode = graph.getSize();
-    	int nbrTest_faisable = 100 ;
-  
-    	String mapName = "/Users/franck/Desktop/toulouse.mapgr";
     	
-    	for (int i=0 ; i<100 ; i++){
-    
-    			int originId = (int) (Math.random()*nbNode); // generation des id aléatoires
-	   		int destinationId = (int) (Math.random()*nbNode);
+    	int nbrTest_faisable = nbtests ;
+  
+    	String mapName = "./src/maps/toulouse.mapgr";
+    	for (int i=0 ; i<nbtests ; i++){
 	        ShortestPathSolution[] Solutions = new ShortestPathSolution[2];
-	        Solutions = TestDijkstraBF(mapName,originId,destinationId,6);
+	        Solutions = TestDijkstraBF(mapName,-1,-1,6);
 	        System.out.println(Solutions[1].isFeasible());
 	        if ( Solutions[0].isFeasible() == false || Solutions[1].isFeasible() == false ) {
 	        		nbrTest_faisable-- ;// on ne prend pas en compte le test si le chemin n'est pas faisable
@@ -163,11 +162,11 @@ public class DijkstraAlgorithmTest {
 	        }
     	}
     	if ( compteur==nbrTest_faisable) {
-    		System.out.println("Les 100 tests en distance sont validés");
+    		System.out.println("Les  "+ nbtests+ "  tests en distance sont validés");
     		assertTrue(compteur==nbrTest_faisable);
     	}
     	else {
-    		System.out.println(compteur+" tests validés sur 100");
+    		System.out.println(compteur+" tests validés sur  "+ nbtests+ " ");
     	}
 	        
     }
@@ -176,17 +175,14 @@ public class DijkstraAlgorithmTest {
     // Test simple en temps sur 100 tests
     public void testDijkstraTime() throws Exception { 	
     	int compteur = 0 ;
-    	int nbNode = graph.getSize();
-    	int nbrTest_faisable = 100 ;
+    	int nbrTest_faisable = nbtests ;
   
-    	String mapName = "/Users/franck/Desktop/toulouse.mapgr";
+    	String mapName = "./src/maps/toulouse.mapgr";
     	
-    	for (int i=0 ; i<100 ; i++){
+    	for (int i=0 ; i<nbtests ; i++){
     
-    			int originId = (int) (Math.random()*nbNode); // generation des id aléatoires
-	   		int destinationId = (int) (Math.random()*nbNode);
 	        ShortestPathSolution[] Solutions = new ShortestPathSolution[2];
-	        Solutions = TestDijkstraBF(mapName,originId,destinationId,2);
+	        Solutions = TestDijkstraBF(mapName,-1,-1,2);
 	        System.out.println(Solutions[1].isFeasible());
 	        if ( Solutions[0].isFeasible() == false || Solutions[1].isFeasible() == false ) {
 	        		nbrTest_faisable-- ;// on ne prend pas en compte le test si le chemin n'est pas faisable
@@ -198,11 +194,11 @@ public class DijkstraAlgorithmTest {
 	        }
     	}
     	if ( compteur==nbrTest_faisable) {
-    		System.out.println("Les 100 tests en temps sont validés");
+    		System.out.println("Les "+ nbtests+ " tests en temps sont validés");
     		assertTrue(compteur==nbrTest_faisable);
     	}
     	else {
-    		System.out.println(compteur+" tests validés sur 100");
+    		System.out.println(compteur+" tests validés sur  "+ nbtests+ " ");
     	}
 	        
     }
@@ -211,7 +207,7 @@ public class DijkstraAlgorithmTest {
     @Test 
     // Chemin inexistant
     public void testDijkstraNoWay() throws Exception { 	
-    	String mapName = "/home/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/new-zealand.mapgr";
+    	String mapName = "./src/maps/new-zealand.mapgr";
         ShortestPathSolution[] Solutions = new ShortestPathSolution[2];
         Solutions = TestDijkstraBF(mapName,15357,313202,0);
         assertEquals(Solutions[0].getStatus(), Solutions[1].getStatus());
@@ -222,25 +218,22 @@ public class DijkstraAlgorithmTest {
     public void testDijkstraStartEEnd() throws Exception { 	
 	
     	int compteur = 0 ;
-    	int nbNode = graph.getSize();
-    	int nbrTest_total = 100 ;
+    	int nbrTest_total = nbtests ;
   
-    	String mapName = "/Users/franck/Desktop/toulouse.mapgr";
+    	String mapName = "./src/maps/toulouse.mapgr";
     	
     	for (int i=0 ; i< nbrTest_total ; i++){
     
-    		int originId= (int) (Math.random()*nbNode); // generation des id aléatoires
-    		int destinationId = originId ;
 	    ShortestPathSolution[] Solutions = new ShortestPathSolution[2];
-	    Solutions = TestDijkstraBF(mapName,originId,destinationId,2);
+	    Solutions = TestDijkstraBF(mapName,-1,-1,2);
 	    System.out.println(Solutions[1].isFeasible());
 	    if ( Solutions[0].getStatus().equals(Solutions[1].getStatus())); {
 	        		compteur++;	// test ok 
 	    }
     	}
     	if ( compteur==nbrTest_total) {
-    		System.out.println("Les "+ nbrTest_total+ " tests sont validés");
-    		assertTrue(compteur==nbrTest_total);
+    		System.out.println("Les "+ nbrTest_total+ " tests sont validés ");
+    		assertTrue(compteur == nbrTest_total);
     		
     	}
     	else {
@@ -253,7 +246,7 @@ public class DijkstraAlgorithmTest {
     @Test 
     // Chemin avec des routes interdites aux voitures
     public void testDijkstraNoCarAllowed() throws Exception { 	
-    	String mapName = "/Users/franck/Desktop/toulouse.mapgr";
+    	String mapName = "./src/maps/toulouse.mapgr";
     	ShortestPathSolution[] Solutions = new ShortestPathSolution[2];
         Solutions = TestDijkstraBF(mapName,3669,17290,1);
         //System.out.println(Solutions[0].getPath());
@@ -263,7 +256,7 @@ public class DijkstraAlgorithmTest {
     @Test 
     // TEST Sans Oracle
     public void testDijkstraNoOracle() throws Exception { 	
-    	String mapName = "/home/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/midi-pyrenees.mapgr";
+    	String mapName = "./src/maps/toulouse.mapgr";
     	List<ArcInspector> filters = ArcInspectorFactory.getAllFilters();
         // Create a graph reader.
         GraphReader reader = new BinaryGraphReader(
@@ -276,16 +269,34 @@ public class DijkstraAlgorithmTest {
         Node origin = graph.get(originId);
         Node destination = graph.get(destinationId);
         ShortestPathData data = new ShortestPathData(graph, origin, destination, filters.get(1));
+        ShortestPathData dataTime = new ShortestPathData(graph, origin, destination, filters.get(2));
         //solution Dijkstra
       	DijkstraAlgorithm algoD = new DijkstraAlgorithm(data);
+      	DijkstraAlgorithm algoDTime = new DijkstraAlgorithm(dataTime);
       	ShortestPathSolution solution = algoD.doRun();
-      	int solutionSize = solution.getPath().size();
-      	List<Arc> Arcs = solution.getPath().getArcs();
-      	Arc arcMilieu = Arcs.get((int) solutionSize/2);
-      	Node arcNode = arcMilieu.getOrigin();
-      	
-      	//On a récupéré le milieu du chemin refaire 2 chemin du début au milieu puis du milieu a la fin et comparer la somme des distances à l'autre
-    }
+      	ShortestPathSolution solutionTime = algoDTime.doRun();
+      	if(solution.isFeasible()){
+	      	int solutionSize = solution.getPath().size();
+	      	List<Arc> Arcs = solution.getPath().getArcs();
+	      	Arc arcMilieu = Arcs.get((int) solutionSize/2);
+	      	Node arcMilieuNode = arcMilieu.getOrigin();
+	      	
+	      	//Première moitié
+	      	ShortestPathData data2 = new ShortestPathData(graph, origin, arcMilieuNode, filters.get(1));
+	      	DijkstraAlgorithm algo2 = new DijkstraAlgorithm(data2);
+	      	ShortestPathSolution solution2 = algo2.doRun();
+	      	int solutionSize2 = solution2.getPath().size() - 1;
+	      //Deuxième moitié
+	      	ShortestPathData data3 = new ShortestPathData(graph, arcMilieuNode, destination, filters.get(1));
+	      	DijkstraAlgorithm algo3 = new DijkstraAlgorithm(data3);
+	      	ShortestPathSolution solution3 = algo3.doRun();
+	      	solutionSize2 += solution3.getPath().size();
+	      	System.out.println(solutionSize+" / " + solutionSize2);
+	      	assertEquals(solutionSize, solutionSize2);
+      	} else {
+      		testDijkstraNoOracle();
+      	}
+      }
  
 
  
@@ -306,6 +317,11 @@ public class DijkstraAlgorithmTest {
         new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
         //Read the graph.
         Graph graph = reader.read();
+        if(originId == -1){
+        	int nbNode = graph.getSize();
+			originId = (int) (Math.random()*nbNode); // generation des id aléatoires
+			destinationId = (int) (Math.random()*nbNode);
+        } 
         Node origin = graph.get(originId);
         Node destination = graph.get(destinationId);
         ShortestPathData data = new ShortestPathData(graph, origin, destination, filters.get(filterId));
@@ -315,26 +331,6 @@ public class DijkstraAlgorithmTest {
         //Solution Bellman Ford
         BellmanFordAlgorithm algoBF = new BellmanFordAlgorithm(data);
         Solutions[1] = algoBF.run();
-        return Solutions;
-    }
-    
-    private ShortestPathSolution[] TestDijkstra_Astar(String mapName, int originId, int destinationId, int filterId) throws Exception {
-        List<ArcInspector> filters = ArcInspectorFactory.getAllFilters();
-        ShortestPathSolution[] Solutions = new ShortestPathSolution[2];
-        // Create a graph reader.
-        GraphReader reader = new BinaryGraphReader(
-        new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
-        //Read the graph.
-        Graph graph = reader.read();
-        Node origin = graph.get(originId);
-        Node destination = graph.get(destinationId);
-        ShortestPathData data = new ShortestPathData(graph, origin, destination, filters.get(filterId));
-        //solution Dijkstra
-      	DijkstraAlgorithm algoD = new DijkstraAlgorithm(data);
-      	Solutions[0] = algoD.doRun();
-        //Solution Astar
-        AStarAlgorithm algoAstar = new AStarAlgorithm(data);
-        Solutions[1] = algoAstar.doRun();
         return Solutions;
     }
 }
